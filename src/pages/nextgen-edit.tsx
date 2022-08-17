@@ -5,20 +5,20 @@ import React, { useEffect } from 'react';
 import sorghumData from '../data/sorghum.json';
 
 type ApsimVariable = {
-  name: string | null | undefined;
-  description: string | null | undefined;
-  units: string | undefined;
+  name?: string | null;
+  description?: string | null;
+  units?: string | null;
   source: string;
-  nextgen: string | undefined;
+  nextgen?: string;
 }
 
 const EditVariables: NextPage = () => {
   const [areaText, setAreaText] = React.useState('Paste text here');
   const [sorghumVariables, setSorghumVariables] = React.useState<ApsimVariable[]>([]);
 
-  React.useEffect(()=> {
+  React.useEffect(() => {
     console.log('data', sorghumVariables);
-    
+
     setSorghumVariables(sorghumData);
   }, [])
 
@@ -42,7 +42,7 @@ const EditVariables: NextPage = () => {
   const exportToJson = e => {
     e.preventDefault()
     downloadFile({
-      data: JSON.stringify(parsedText),
+      data: JSON.stringify(sorghumVariables),
       fileName: 'sorghum.json',
       fileType: 'text/json',
     })
@@ -73,16 +73,16 @@ const EditVariables: NextPage = () => {
                     <div className="flex-col w-1/4">
                       <div className="p-1 font-semibold">{line.name}</div>
                       <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
-                    </div> 
+                    </div>
                     <div className="w-3/4 flex-col">
                       <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
-                      <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md" 
-                        value={line.nextgen} onChange={(e) =>{
-                          line.nextgen=e.target.value;
-                      }}/>
+                      <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
+                        value={line.nextgen} onChange={(e) => {
+                          line.nextgen = e.target.value;
+                        }} />
                     </div>
                   </div>
-                    <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
+                  <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
                 </div>
                 :
                 <div className="p-1 italic">{line.source}</div>

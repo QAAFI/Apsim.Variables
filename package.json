@@ -1,12 +1,15 @@
 {
   "name": "apsim-variables",
   "version": "0.1.0",
+  "homepage": "https://QAAFI.github.io/Apsim.Variables",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "next": "12.2.3",
@@ -21,6 +24,7 @@
     "autoprefixer": "^10.4.8",
     "eslint": "8.18.0",
     "eslint-config-next": "12.2.3",
+    "gh-pages": "^4.0.0",
     "postcss": "^8.4.16",
     "tailwindcss": "^3.1.8",
     "typescript": "4.7.4"

@@ -5,8 +5,8 @@ import { string } from "zod";
 
 type TechnologyCardProps = {
   name: string;
-  description: string;
-  documentation: string;
+  description?: string;
+  documentation?: string;
 };
 type ApsimVariable = {
   name: string | null | undefined;
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
         <h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
-        Apsim Classic to NextGen Variables
+          Apsim Classic to NextGen Variables
         </h1>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-3 lg:w-2/3">
           <TechnologyCard name="Parse Classic Variables" documentation="/parse"></TechnologyCard>
