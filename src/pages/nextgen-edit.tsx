@@ -2,7 +2,7 @@ import { setDefaultResultOrder } from "dns";
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect } from 'react';
-import sorghumData from '../data/sorghum.json';
+import sorghumData from '../../public/sorghum.json';
 
 type ApsimVariable = {
   name?: string | null;
@@ -17,10 +17,9 @@ const EditVariables: NextPage = () => {
   const [sorghumVariables, setSorghumVariables] = React.useState<ApsimVariable[]>([]);
 
   React.useEffect(() => {
-    console.log('data', sorghumVariables);
 
     setSorghumVariables(sorghumData);
-  }, [])
+  }, [sorghumData])
 
   const downloadFile = ({ data, fileName, fileType }) => {
     // Create a blob with the data we want to download as a file
