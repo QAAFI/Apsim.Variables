@@ -33,7 +33,7 @@ const Home: NextPage = () => {
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-3 lg:w-2/3">
           <TechnologyCard name="Parse Classic Variables" documentation="/parse"></TechnologyCard>
           <TechnologyCard name="Edit NextGen Variables" documentation="/nextgen-edit"></TechnologyCard>
-          <TechnologyCard name="View Variables"></TechnologyCard>
+          <TechnologyCard name="View Variables" documentation="/view-variable"></TechnologyCard>
         </div>
 
       </main>
