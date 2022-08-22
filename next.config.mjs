@@ -1,5 +1,7 @@
 import { env } from "./src/env/server.mjs";
 
+const debug = process.env.NODE_ENV !== "production";
+
 /**
  * Don't be scared of the generics here.
  * All they do is to give us autocompletion when using this.
@@ -15,4 +17,6 @@ function defineNextConfig(config) {
 export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
+  distDir: "build",
+  assetPrefix: !debug ? 'https://qaafi.github.io/Apsim.Variables/' : '',
 });

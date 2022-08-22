@@ -1,12 +1,13 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import React, { useEffect } from 'react';
 import { string } from "zod";
 
 type TechnologyCardProps = {
   name: string;
-  description: string;
-  documentation: string;
+  description?: string;
+  documentation?: string;
 };
 type ApsimVariable = {
   name: string | null | undefined;
@@ -27,12 +28,12 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
         <h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
-        Apsim Classic to NextGen Variables
+          Apsim Classic to NextGen Variables
         </h1>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-3 lg:w-2/3">
           <TechnologyCard name="Parse Classic Variables" documentation="/parse"></TechnologyCard>
           <TechnologyCard name="Edit NextGen Variables" documentation="/nextgen-edit"></TechnologyCard>
-          <TechnologyCard name="View Variables"></TechnologyCard>
+          <TechnologyCard name="View Variables" documentation="/view-variable"></TechnologyCard>
         </div>
 
       </main>
@@ -45,18 +46,22 @@ const TechnologyCard = ({
   description,
   documentation,
 }: TechnologyCardProps) => {
+
+  const env = process.env.NODE_ENV === 'production';
   return (
     <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
       <h2 className="text-lg text-gray-700">{name}</h2>
       <p className="text-sm text-gray-600">{description}</p>
-      <a
-        className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
-        href={documentation}
-        // target="_blank"
-        rel="noreferrer"
-      >
-        Documentation
-      </a>
+      <Link href={documentation ?? ''} as={(env ? process.env.NEXT_BACKEND_URL : '') + '' + documentation}>
+        <a
+          className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
+          // href={documentation}
+          // target="_blank"
+          rel="noreferrer"
+        >
+          Documentation
+        </a>
+      </Link>
     </section>
   );
 };

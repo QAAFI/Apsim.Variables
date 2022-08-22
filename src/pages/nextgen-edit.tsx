@@ -1,26 +1,25 @@
-import { setDefaultResultOrder } from "dns";
 import type { NextPage } from "next";
 import Head from "next/head";
-import React, { useEffect } from 'react';
-import sorghumData from '../data/sorghum.json';
+import React, { useEffect, useState } from 'react';
+import sorghumData from '../../public/sorghum.json';
 
 type ApsimVariable = {
-  name: string | null | undefined;
-  description: string | null | undefined;
-  units: string | undefined;
+  name?: string | null;
+  description?: string | null;
+  units?: string | null;
   source: string;
-  nextgen: string | undefined;
+  nextgen?: string;
 }
 
 const EditVariables: NextPage = () => {
-  const [areaText, setAreaText] = React.useState('Paste text here');
-  const [sorghumVariables, setSorghumVariables] = React.useState<ApsimVariable[]>([]);
+  const [areaText, setAreaText] = useState('Paste text here');
+  const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
+  const [search, setSearch] = useState('')
 
-  React.useEffect(()=> {
-    console.log('data', sorghumVariables);
-    
+  useEffect(() => {
+
     setSorghumVariables(sorghumData);
-  }, [])
+  }, [sorghumData])
 
   const downloadFile = ({ data, fileName, fileType }) => {
     // Create a blob with the data we want to download as a file
@@ -42,10 +41,14 @@ const EditVariables: NextPage = () => {
   const exportToJson = e => {
     e.preventDefault()
     downloadFile({
-      data: JSON.stringify(parsedText),
+      data: JSON.stringify(sorghumVariables),
       fileName: 'sorghum.json',
       fileType: 'text/json',
     })
+  }
+
+  const handleFilter = (search: string) => {
+    setSearch(search)
   }
 
   return (
@@ -64,31 +67,48 @@ const EditVariables: NextPage = () => {
           className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Export to JSON
         </button>
-        <ul className="w-full pt-2 container mx-auto flex flex-col ">
-          {sorghumVariables?.map((line, index) =>
-            <li key={index} className="p-2 relative border flex-row" >
-              {line.name ?
-                <div className="flex flex-col">
-                  <div className="flex flex-row">
-                    <div className="flex-col w-1/4">
-                      <div className="p-1 font-semibold">{line.name}</div>
-                      <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
-                    </div> 
-                    <div className="w-3/4 flex-col">
-                      <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
-                      <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md" 
-                        value={line.nextgen} onChange={(e) =>{
-                          line.nextgen=e.target.value;
-                      }}/>
+        <div className="mt-4 w-full">
+          <input
+            type="text"
+            name="nextgen"
+            id="nextgen"
+            className="w-full mt-2 p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
+            value={search}
+            onChange={(e) => handleFilter(e.target.value)}
+            placeholder="Search for variable name"
+          />
+        </div>
+
+        < ul className="w-full pt-2 container mx-auto flex flex-col " >
+          {sorghumVariables?.map((line, index) => (
+            line.name && line.name.toLowerCase().includes(search.toLowerCase()) ? (
+              <li key={index} className="p-2 relative border flex-row" >
+                {line.name &&
+                  <div className="flex flex-col">
+                    <div className="flex flex-row">
+                      <div className="flex-col w-1/4">
+                        <div className="p-1 font-semibold">{line.name}</div>
+                        <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
+                      </div>
+                      <div className="w-3/4 flex-col">
+                        <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
+                        <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
+                          value={line.nextgen} onChange={(e) => {
+                            line.nextgen = e.target.value;
+                          }} />
+                      </div>
                     </div>
-                  </div>
                     <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
-                </div>
-                :
+                  </div>
+                }
+              </li>
+            ) : (
+              !search && (<li key={index} className="p-2 relative border flex-row" >
                 <div className="p-1 italic">{line.source}</div>
-              }
-            </li>
-          )}
+              </li>)
+            )
+          ))
+          }
         </ul>
       </main>
     </>
