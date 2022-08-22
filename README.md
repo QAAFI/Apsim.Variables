@@ -28,10 +28,10 @@ Before deploying the ApsimX Variable, here are the configurations which are requ
 
 2. next.config.mjs
    - distDir - to tell NextJS where it should create the production file to.
-   - assetPrefix - to tell NextJS to add this prefix to every assets path
+   - assetPrefix - to tell NextJS to add this prefix to every assets path. Github Pages requires this setting to map the asset to the application
 
-3. .env(-example)
-   - NEXT_BACKEND_URL - to change the domain of routing inside the components.
+3. .env 
+   - NEXT_BACKEND_URL - to change the domain of routing inside the components. Default value: `/Apsim.Variables`
    
 ### Informations
 - [Github settings for Github Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
