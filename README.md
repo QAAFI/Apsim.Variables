@@ -1,4 +1,5 @@
-# ApsimX Variable
+# [ApsimX Variable](https://QAAFI.github.io/Apsim.Variables) 
+
 ApsimX Variable is an application which can be used to create a NextGen Variable in JSON file format. The user can create a JSON file by parsing their own variables or using a template which provide the basic variable to effectively create a NextGen Variable file. Besides that they can also view their variable in their file.
 
 ## How to run ApsimX Variable Application
