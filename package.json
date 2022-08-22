@@ -8,7 +8,7 @@
     "build": "next build && next export",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "npm run build && mkdir backup && cp -r ./out/* && ./backup && cp README.md ./backup && git checkout gh-pages -f && git pull && rm -rf ./_next/ && mv ./backup/* ./ && rm -rf ./backup/ && git add . && git commit -m \"Deploy gh-pages\" && git push origin gh-pages && git checkout master"
+    "deploy": "npm run build && mkdir backup && cp -r ./out/* ./backup && cp README.md ./backup && git checkout gh-pages -f && git pull && rm -rf ./_next/ && mv ./backup/* ./ && rm -rf ./backup/ && git add . && git commit -m \"Deploy gh-pages\" && git push origin gh-pages && git checkout master"
   },
   "dependencies": {
     "next": "12.2.3",
