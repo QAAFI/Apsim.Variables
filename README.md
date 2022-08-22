@@ -31,8 +31,15 @@ Before deploying the ApsimX Variable, here are the configurations which are requ
    - distDir - to tell NextJS where it should create the production file to.
    - assetPrefix - to tell NextJS to add this prefix to every assets path. Github Pages requires this setting to map the asset to the application
 
-3. .env 
-   - NEXT_BACKEND_URL - to change the domain of routing inside the components. Default value: `/Apsim.Variables`
+3. babel-config.js
+   - BACKEND_URL - to change the domain of routing inside the components. Default value: `/Apsim.Variables`\
+   
+4. babelrc.js
+   to transform the env in `babel-config.js` file to remote env without creating the `.env` file
+
+### NOTE
+- You should only run `npm run deploy` on `master` branch, otherwise it will fail on updating the `gh-pages` branch
+- Step 3 and 4 can be ignore `BACKEND_URL` if we set up the configuration on Github repository, however in NextJS, the env have to have `NEXT_` as variable config. 
    
 ### Informations
 - [Github settings for Github Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)

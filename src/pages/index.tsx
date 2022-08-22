@@ -1,8 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import React, { useEffect } from 'react';
-import { string } from "zod";
+import React from 'react';
 
 type TechnologyCardProps = {
   name: string;
@@ -47,12 +46,11 @@ const TechnologyCard = ({
   documentation,
 }: TechnologyCardProps) => {
 
-  const env = process.env.NODE_ENV === 'production';
   return (
     <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
       <h2 className="text-lg text-gray-700">{name}</h2>
       <p className="text-sm text-gray-600">{description}</p>
-      <Link href={documentation ?? ''} as={(env ? process.env.NEXT_BACKEND_URL : '') + '' + documentation}>
+      <Link href={documentation ?? ''} as={`${process.env.BACKEND_URL}${documentation}`}>
         <a
           className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
           // href={documentation}
