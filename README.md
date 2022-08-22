@@ -20,12 +20,15 @@ Before deploying the ApsimX Variable, here are the configurations which are requ
 
 1. package.json
    - `homepage` - to set up the url on remote Github Pages
-   - `npm run deploy` - to deploy the static files to Github Pages
-      - `npm run build` - to build and create production static files to `out` folder
-      - `touch ./out/.nojekyll` - create `.nojekyll` file, to tell Github to ignore the directory start with `_`, for example `_next` 
-      - `git add out/ -f` - to add `./out` folder which is where production static files are created to git
-      - `git commit -m \"Deploy gh-pages\"`
-      - `git subtree push --prefix out origin gh-pages` - to push `out` local folder to remote gh-pages branch 
+   - Deploying script - it is a work around, subtree can't be used because we ignored the related files. 
+      - `npm run deploy` - to deploy the static files to Github Pages
+         - `npm run build` - to build and create production static files to `out` folder
+         - `mkdir backup && cp -r ./out/* ./backup` - to make backup folder which will be counted as changed in gh-pages branch
+         - `touch ./out/.nojekyll` - create `.nojekyll` file, to tell Github to ignore the directory start with `_`, for example `_next` 
+         - `git checkout gh-pages -f && git pull` - change to `gh-pages` branch and pull
+         - `rm -rf ./_next/` - clear the old data 
+         - `mv ./backup/* ./ && rm -rf ./backup/` - move all changes in backup file to the `gh-pages` branch and clean up
+         - `git add . && git commit -m \"Deploy gh-pages\" && git push origin gh-pages` - normal push to the gh-pages branch
 
 2. next.config.mjs
    - distDir - to tell NextJS where it should create the production file to.
