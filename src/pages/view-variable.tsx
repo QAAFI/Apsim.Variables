@@ -1,14 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from 'react';
-
-type ApsimVariable = {
-	name?: string | null;
-	description?: string | null;
-	units?: string | null;
-	source: string;
-	nextgen?: string;
-}
+import { ApsimVariable } from "../models";
 
 const EditVariables: NextPage = () => {
 	const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);

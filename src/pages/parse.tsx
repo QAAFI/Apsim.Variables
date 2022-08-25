@@ -1,14 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect } from 'react';
+import { ApsimVariable } from "../models";
 
-
-type ApsimVariable = {
-  name: string | null | undefined;
-  description: string | null | undefined;
-  units: string | null | undefined;
-  source: string;
-}
 
 const Parse: NextPage = () => {
   const [areaText, setAreaText] = React.useState('Paste text here');

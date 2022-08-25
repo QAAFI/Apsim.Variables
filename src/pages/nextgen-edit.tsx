@@ -2,19 +2,26 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useState } from 'react';
 import sorghumData from '../../public/sorghum.json';
+import { BadgeColor } from "../components/atoms";
+import { FilterRes, FilterSearch } from "../components/molecules/filter-search";
+import { ApsimVariable } from "../models";
 
-type ApsimVariable = {
-  name?: string | null;
-  description?: string | null;
-  units?: string | null;
-  source: string;
-  nextgen?: string;
+const filterOptions = [
+  { name: "Variable name", value: "0" },
+  { name: "Heading", value: "1" },
+  { name: "Tag name", value: "2" },
+]
+const colorMapper: { [key: string]: BadgeColor } = {
+  "0": 'blue',
+  "1": 'green',
+  "2": 'red',
 }
 
 const EditVariables: NextPage = () => {
-  const [areaText, setAreaText] = useState('Paste text here');
   const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState<FilterRes>({});
+
+
 
   useEffect(() => {
 
@@ -47,8 +54,33 @@ const EditVariables: NextPage = () => {
     })
   }
 
-  const handleFilter = (search: string) => {
-    setSearch(search)
+  const searchByVariableName = (searchValue: string, line: ApsimVariable) => {
+    return line?.name?.toLowerCase().includes(searchValue.toLowerCase())
+  }
+
+  const getFilterFuction = (methodIdx: number, search: string, line: ApsimVariable) => {
+    switch (methodIdx) {
+      case 0:
+        return searchByVariableName(search, line)
+      case 1:
+        break;
+      case 2:
+        break;
+    }
+  }
+
+  const handleFilter = (values: FilterRes) => {
+    setSearch(values)
+  }
+
+  const filterMethod = (line: ApsimVariable) => {
+    let condition: boolean | undefined = undefined;
+    for (var key in search) {
+      for (let value of search[key] ?? []) {
+        condition = condition || getFilterFuction(+key, value, line);
+      }
+    }
+    return condition
   }
 
   return (
@@ -68,46 +100,48 @@ const EditVariables: NextPage = () => {
           Export to JSON
         </button>
         <div className="mt-4 w-full">
-          <input
-            type="text"
-            name="nextgen"
-            id="nextgen"
-            className="w-full mt-2 p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
-            value={search}
-            onChange={(e) => handleFilter(e.target.value)}
-            placeholder="Search for variable name"
+
+          <FilterSearch
+            filterPlaceholder={{ name: "Please select" }}
+            options={filterOptions}
+            onChange={(values) => handleFilter(values)}
+            colorMap={colorMapper}
           />
         </div>
 
         < ul className="w-full pt-2 container mx-auto flex flex-col " >
-          {sorghumVariables?.map((line, index) => (
-            line.name && line.name.toLowerCase().includes(search.toLowerCase()) ? (
-              <li key={index} className="p-2 relative border flex-row" >
-                {line.name &&
-                  <div className="flex flex-col">
-                    <div className="flex flex-row">
-                      <div className="flex-col w-1/4">
-                        <div className="p-1 font-semibold">{line.name}</div>
-                        <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
+          {sorghumVariables?.map((line, index) => {
+
+            if (filterMethod(line) === false) return;
+            return (
+              line.name ? (
+                <li key={index} className="p-2 relative border flex-row" >
+                  {line.name &&
+                    <div className="flex flex-col">
+                      <div className="flex flex-row">
+                        <div className="flex-col w-1/4">
+                          <div className="p-1 font-semibold">{line.name}</div>
+                          <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
+                        </div>
+                        <div className="w-3/4 flex-col">
+                          <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
+                          <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
+                            value={line.nextgen} onChange={(e) => {
+                              line.nextgen = e.target.value;
+                            }} />
+                        </div>
                       </div>
-                      <div className="w-3/4 flex-col">
-                        <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
-                        <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
-                          value={line.nextgen} onChange={(e) => {
-                            line.nextgen = e.target.value;
-                          }} />
-                      </div>
+                      <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
                     </div>
-                    <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
-                  </div>
-                }
-              </li>
-            ) : (
-              !search && (<li key={index} className="p-2 relative border flex-row" >
-                <div className="p-1 italic">{line.source}</div>
-              </li>)
+                  }
+                </li>
+              ) : (
+                !search && (<li key={index} className="p-2 relative border flex-row" >
+                  <div className="p-1 italic">{line.source}</div>
+                </li>)
+              )
             )
-          ))
+          })
           }
         </ul>
       </main>
