@@ -90,7 +90,7 @@ const EditVariables: NextPage = () => {
 					Import JSON
 				</button>
 
-				{sorghumVariables.length > 0 && <div className="mt-4 w-full">
+				{sorghumVariables.length > 0 && <div className="container mt-4 w-full">
 					<FilterSearch
 						filterPlaceholder={{ name: "Please select" }}
 						options={filterOptions}
