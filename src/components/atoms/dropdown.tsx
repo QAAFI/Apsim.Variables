@@ -57,7 +57,7 @@ export const Dropdown = ({
 					{options.map((option, idx) => {
 
 						return (
-							<a href="#" onClick={() => onSelect(idx)} key={option.value} className="flex px-4 py-2 text-sm text-gray-500 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+							<a href="#" key={`dropdown-${option.value}-${idx}`} onClick={() => onSelect(idx)} className="flex px-4 py-2 text-sm text-gray-500 rounded-lg hover:bg-gray-50 hover:text-gray-700">
 								{option.iconPrefix &&
 									<div className="mr-2 self-center">
 										<option.iconPrefix className="w-4 h-4" />

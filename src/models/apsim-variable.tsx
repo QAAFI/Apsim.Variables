@@ -5,5 +5,5 @@ export type ApsimVariable = {
     units?: string | null;
     source: string;
     nextgen?: string;
-    tag?: string;
+    tags?: string[];
 }

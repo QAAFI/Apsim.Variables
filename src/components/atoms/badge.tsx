@@ -12,7 +12,7 @@ interface BadgeProps {
 }
 export const Badge = ({
     children,
-    color,
+    color = 'blue',
     closable = false,
     onClose = () => null,
 }: BadgeProps) => {

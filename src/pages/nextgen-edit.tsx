@@ -3,25 +3,21 @@ import Head from "next/head";
 import React, { useEffect, useState } from 'react';
 import sorghumData from '../../public/sorghum.json';
 import { BadgeColor } from "../components/atoms";
+import { FloatingInput } from "../components/atoms/input";
 import { FilterRes, FilterSearch } from "../components/molecules/filter-search";
+import { TagInput } from "../components/molecules/tag-input";
 import { ApsimVariable } from "../models";
 
 const filterOptions = [
   { name: "Variable name", value: "0" },
-  { name: "Heading", value: "1" },
-  { name: "Tag name", value: "2" },
 ]
 const colorMapper: { [key: string]: BadgeColor } = {
   "0": 'blue',
-  "1": 'green',
-  "2": 'red',
 }
 
 const EditVariables: NextPage = () => {
   const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
   const [search, setSearch] = useState<FilterRes>({});
-
-
 
   useEffect(() => {
 
@@ -55,17 +51,17 @@ const EditVariables: NextPage = () => {
   }
 
   const searchByVariableName = (searchValue: string, line: ApsimVariable) => {
-    return line?.name?.toLowerCase().includes(searchValue.toLowerCase())
+    if (!!line.name) {
+      return line.name.toLowerCase().includes(searchValue.toLowerCase())
+    } else {
+      return true;
+    }
   }
 
   const getFilterFuction = (methodIdx: number, search: string, line: ApsimVariable) => {
     switch (methodIdx) {
       case 0:
         return searchByVariableName(search, line)
-      case 1:
-        break;
-      case 2:
-        break;
     }
   }
 
@@ -91,7 +87,7 @@ const EditVariables: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
+      <main className="container mx-auto flex flex-col items-center min-h-screen p-4">
         <h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
           Edit Apsim Classic Variables
         </h1>
@@ -111,27 +107,21 @@ const EditVariables: NextPage = () => {
 
         < ul className="w-full pt-2 container mx-auto flex flex-col " >
           {sorghumVariables?.map((line, index) => {
-
             if (filterMethod(line) === false) return;
             return (
               line.name ? (
                 <li key={index} className="p-2 relative border flex-row" >
                   {line.name &&
-                    <div className="flex flex-col">
-                      <div className="flex flex-row">
-                        <div className="flex-col w-1/4">
-                          <div className="p-1 font-semibold">{line.name}</div>
-                          <div className="p-1 italic l-4 text-gray-400"> {line.units ? line.units : null}</div>
-                        </div>
-                        <div className="w-3/4 flex-col">
-                          <label htmlFor="nextgen" className="p-1 block">Apsim NextGen Reference</label>
-                          <input type="text" name="nextgen" id="nextgen" className="w-full p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 border rounded-md"
-                            value={line.nextgen} onChange={(e) => {
-                              line.nextgen = e.target.value;
-                            }} />
-                        </div>
+                    <div className="flex">
+                      <div className="flex flex-col w-1/4">
+                        <div className="p-1 font-semibold">{line.name}</div>
+                        <div className="pl-1 italic text-xs l-4 text-gray-400"> {line.units ? line.units : null}</div>
+                        <div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
                       </div>
-                      <div className="basis-1/2 p-1 text-gray-600">{line.description ? line.description : null}</div>
+                      <div className="flex flex-col w-3/4 gap-2">
+                        <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => line.nextgen = value} />
+                        <TagInput label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} />
+                      </div>
                     </div>
                   }
                 </li>

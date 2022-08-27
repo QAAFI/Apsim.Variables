@@ -41,7 +41,6 @@ export const FilterSearch = ({
 		onChange(response);
 	}, [filterValues])
 
-
 	const onClickSearch = () => {
 		if (options.length <= 0 || !search) return;
 		const currentValues = filterValues;
@@ -56,13 +55,12 @@ export const FilterSearch = ({
 
 		setSearch("");
 	}
-
+	console.log(filterValues)
 	const handleOnBadgeClose = (idx: number) => {
 		const currentValue = filterValues;
 		currentValue.splice(idx, 1)
 		setFilterValues([...currentValue])
 	}
-
 
 	return (
 		<div className="flex relative shadow-sm border-gray-300 border rounded-md">
@@ -83,6 +81,7 @@ export const FilterSearch = ({
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
 					placeholder={placeholder}
+					onKeyDown={(e) => { if (e.key === 'Enter') { onClickSearch() } }}
 				/>
 
 				<div className="absolute w-full right-2 top-0 translate-y-[10%] flex flex-auto justify-end gap-1 pointer-events-none">
