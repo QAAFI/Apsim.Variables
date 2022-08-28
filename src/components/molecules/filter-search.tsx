@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge, BadgeColor, Button, Dropdown, DropdownOption } from "../atoms";
 import { FaSearch } from 'react-icons/fa';
 
-export interface FilterRes {
+import { useOnClickOutside } from "../../hooks/click-outside";
+
+export interface FilterRes {  // easy to use
 	[key: string]: string[]
 }
 
@@ -12,7 +14,9 @@ type FilterProps = {
 	filterPlaceholder?: DropdownOption;
 	placeholder?: string;
 	onChange?: (values: FilterRes) => void;
-	colorMap?: { [key: string]: BadgeColor }
+	colorMap?: { [key: string]: BadgeColor };
+	suggestions?: string[];
+	getSelectedFilterIdx?: (idx: number) => void;
 };
 
 export const FilterSearch = ({
@@ -21,46 +25,83 @@ export const FilterSearch = ({
 	filterPlaceholder,
 	placeholder,
 	colorMap,
-	onChange = (values: FilterRes) => null
+	onChange = (values: FilterRes) => null,
+	suggestions = [],
+	getSelectedFilterIdx = (idx: number) => null,
 }: FilterProps) => {
 
 	const [filterIdx, setFilterIdx] = useState<number>(0);
 	const [search, setSearch] = useState('');
-	const [filterValues, setFilterValues] = useState<{ [key: string]: string }[]>([]);
+	const [searchValues, setSearchValues] = useState<{ [key: string]: string }[]>([]);  // to store internal filter (dynamic)
+	const [badges, setBadges] = useState<string[][]>([]);  // to store badge info (static)
+	const [expanded, setExpanded] = useState(false);
+	const [existedValues, setExistedValues] = useState<FilterRes>({});
+
+	const dropdownRef: React.LegacyRef<HTMLDivElement> = useRef(null);
+	useOnClickOutside(dropdownRef, () => setExpanded(false));
 
 	useEffect(() => {
-		const response: FilterRes = {}
-		filterValues.map(v => {
+		const response: FilterRes = {};
+		searchValues.map(v => {
 			const key = Object.keys(v)[0] ?? '';
 			if (Object.keys(response).includes(key)) {
-				response[key]?.push(v[key] ?? '')
+				response[key]?.push(v[key] ?? '');
 			} else if (v && v[key]) {
-				response[key] = [v[key] ?? '']
+				response[key] = [v[key] ?? ''];
 			}
 		})
+		setExistedValues(response);
 		onChange(response);
-	}, [filterValues])
+	}, [searchValues])
 
 	const onClickSearch = () => {
+		setExpanded(false);
 		if (options.length <= 0 || !search) return;
-		const currentValues = filterValues;
+		const currentValues = searchValues;
 		const key = options[filterIdx]?.value ?? '';
 		if (!key || !currentValues) return;
 
-		const dupValue = currentValues.length > 0 && currentValues.map(v => !!v[key] && v[key] === search).reduce((prev, curr) => prev || curr)
+		const dupValue = currentValues.length > 0 && currentValues.map(v => !!v[key] && v[key] === search).reduce((prev, curr) => prev || curr);
 		if (!dupValue) {
-			currentValues.push({ [key]: search })
-			setFilterValues([...currentValues])
+			currentValues.push({ [key]: search });
+			setSearchValues([...currentValues]);
+
+			// add new badges
+			const currentBadges = badges;
+			currentBadges.push([key, (options[filterIdx]?.extra ?? '') + search])
+			setBadges([...currentBadges])
 		}
 
 		setSearch("");
 	}
-	console.log(filterValues)
+
 	const handleOnBadgeClose = (idx: number) => {
-		const currentValue = filterValues;
+		const currentValue = searchValues;
 		currentValue.splice(idx, 1)
-		setFilterValues([...currentValue])
+		setSearchValues([...currentValue])
+
+		const currentBadges = badges;
+		currentBadges.splice(idx, 1)
+		setBadges([...currentBadges])
 	}
+
+	const onSelectSuggestion = (value: string) => {
+		setSearch(value ?? '')
+		const input = document.getElementById(id);
+		input?.focus();
+	}
+
+	const suggestionsList = (
+		search ?
+			suggestions.filter(v => {
+				const isContainedMatch = v.toLowerCase().includes(search.toLowerCase());
+				const isNotExactSame = search.toLowerCase() !== v.toLowerCase()
+				return isContainedMatch && isNotExactSame;
+			})
+			:
+			suggestions
+		// Filter the existing one out from the suggestions
+	).filter(v => !existedValues[options[filterIdx]?.value ?? '']?.map(exv => exv.toLowerCase()).includes(v.toLowerCase()) ?? false);
 
 	return (
 		<div className="flex relative shadow-sm border-gray-300 border rounded-md">
@@ -68,12 +109,12 @@ export const FilterSearch = ({
 				<Dropdown
 					options={options}
 					placeholder={filterPlaceholder}
-					onSelect={(idx: number) => setFilterIdx(idx)}
+					onSelect={(idx: number) => { setFilterIdx(idx); getSelectedFilterIdx(idx) }}
 					selectedIndex={filterIdx}
 					embedded='left'
 				/>
 			</div>
-			<div className="relative w-full">
+			<div ref={dropdownRef} className="relative w-full">
 				<input
 					type="text"
 					id={id}
@@ -82,12 +123,14 @@ export const FilterSearch = ({
 					onChange={(e) => setSearch(e.target.value)}
 					placeholder={placeholder}
 					onKeyDown={(e) => { if (e.key === 'Enter') { onClickSearch() } }}
+					autoComplete="off"
+					onFocus={() => setExpanded(true)}
 				/>
 
-				<div className="absolute w-full right-2 top-0 translate-y-[10%] flex flex-auto justify-end gap-1 pointer-events-none">
-					{filterValues.map((v, idx) => {
-						const key = Object.keys(v)[0] ?? '';
-						const value = v[key];
+				<div className="absolute w-full right-2 top-0 translate-y-[10%] flex flex-auto justify-end gap-1 pointer-events-none" onBlur={() => setExpanded(false)}>
+					{badges.map((v, idx) => {
+						const key = v[0] ?? '';
+						const value = v[1];
 						return (
 							<div className="pointer-events-auto" key={`b-${key}-${value}`}>
 								<Badge closable color={colorMap ? colorMap[key] : "green"} onClose={() => handleOnBadgeClose(idx)}>{value}</Badge>
@@ -96,6 +139,24 @@ export const FilterSearch = ({
 					}
 					)}
 				</div>
+
+				{expanded && <div
+					className="absolute max-h-[250px] overflow-y-scroll bottom-0 translate-y-[101%] z-20 w-full origin-top-right bg-white border border-gray-100 rounded-b-md shadow-lg"
+					role="menu"
+				>
+					{suggestionsList.map((v, idx) => {
+						return (
+							<a href="#" key={`dropdown-${v}-${idx}`} onClick={() => onSelectSuggestion(v)} className="flex px-4 py-2 text-sm text-gray-500 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+								<div className="flex">
+									<div className="">
+										{v}
+									</div>
+								</div>
+							</a>
+						)
+					})}
+
+				</div>}
 			</div>
 			<Button className="self-center" variation="ghost" onClick={onClickSearch}>
 				<FaSearch className="w-4 h-4"></FaSearch>

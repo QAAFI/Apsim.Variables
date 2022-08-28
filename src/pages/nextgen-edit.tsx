@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import sorghumData from '../../public/sorghum.json';
 import { BadgeColor } from "../components/atoms";
 import { FloatingInput } from "../components/atoms/input";
@@ -19,9 +19,11 @@ const EditVariables: NextPage = () => {
   const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
   const [search, setSearch] = useState<FilterRes>({});
 
-  useEffect(() => {
+  const suggestions = useRef<string[]>([]);
 
+  useEffect(() => {
     setSorghumVariables(sorghumData);
+    suggestions.current = sorghumData.map(d => d.name);
   }, [sorghumData])
 
   const downloadFile = ({ data, fileName, fileType }) => {
@@ -102,6 +104,7 @@ const EditVariables: NextPage = () => {
             options={filterOptions}
             onChange={(values) => handleFilter(values)}
             colorMap={colorMapper}
+            suggestions={suggestions.current}
           />
         </div>
 

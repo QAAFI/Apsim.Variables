@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { Badge, BadgeColor, Button, Dropdown, DropdownOption } from "../atoms";
-import { FaSearch } from 'react-icons/fa';
+import { useState } from "react";
+import { Badge, BadgeColor } from "../atoms";
 import { FloatingInput } from "../atoms/input";
 
 

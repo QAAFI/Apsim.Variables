@@ -10,7 +10,7 @@ import { ApsimVariable } from "../models";
 
 const filterOptions = [
 	{ name: "Variable name", value: "0" },
-	{ name: "Tag name", value: "1" },
+	{ name: "Tag name", value: "1", extra: "#" },
 ]
 const colorMapper: { [key: string]: BadgeColor } = {
 	"0": 'blue',
@@ -21,12 +21,27 @@ const colorMapper: { [key: string]: BadgeColor } = {
 const EditVariables: NextPage = () => {
 	const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
 	const [search, setSearch] = useState<FilterRes>({});
+	const [suggestions, setSuggestions] = useState<string[]>([]);
 
-	const fileInput = useRef<HTMLInputElement>(null);
+	const importButton = useRef<HTMLInputElement>(null);
+	const allSuggestions = useRef<string[][]>([]);
 
 	const readFileSuccess = (res) => {
-		const data = JSON.parse(res)
-		setSorghumVariables(data)
+		const data = JSON.parse(res);
+		setSorghumVariables(data);
+
+		// save suggestions for futher uses
+		const nameSuggestion: string[] = []
+		const tagSuggestions: string[][] = []
+		for (let d of data) {
+			nameSuggestion.push(d.name)
+			tagSuggestions.push(d.tags);
+		}
+		allSuggestions.current = [
+			nameSuggestion,
+			tagSuggestions.reduce((prev: string[], curr: string[]) => { if (curr) { return prev.concat(curr); } else return prev; }),
+		];
+		setSuggestions(allSuggestions.current[0] ?? []);
 	}
 
 	const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -36,9 +51,8 @@ const EditVariables: NextPage = () => {
 		fileReader.readAsText(newFile as File);
 	}
 
-
 	const handleFilter = (values: FilterRes) => {
-		setSearch(values)
+		setSearch(values);
 	}
 
 	const searchByVariableName = (searchValue: string, line: ApsimVariable) => {
@@ -83,9 +97,9 @@ const EditVariables: NextPage = () => {
 				<h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
 					View Apsim Classic Variables
 				</h1>
-				<input id="import-file" ref={fileInput} type="file" className="hidden" onChange={handleFileUpload} />
+				<input id="import-file" ref={importButton} type="file" className="hidden" onChange={handleFileUpload} />
 				<button type='button'
-					onClick={() => fileInput.current?.click()}
+					onClick={() => importButton.current?.click()}
 					className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
 					Import JSON
 				</button>
@@ -96,6 +110,8 @@ const EditVariables: NextPage = () => {
 						options={filterOptions}
 						onChange={(values) => handleFilter(values)}
 						colorMap={colorMapper}
+						suggestions={suggestions}
+						getSelectedFilterIdx={idx => setSuggestions(allSuggestions.current[idx] ?? [])}
 					/>
 				</div>}
 
