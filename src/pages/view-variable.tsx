@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from 'react';
-import { Badge, BadgeColor } from "../components/atoms";
+import { Badge, BadgeColor, Dropdown } from "../components/atoms";
 import { FloatingInput } from "../components/atoms/input";
 import { FilterRes, FilterSearch } from "../components/molecules";
 import { TagInput } from "../components/molecules/tag-input";
@@ -16,12 +16,18 @@ const colorMapper: { [key: string]: BadgeColor } = {
 	"0": 'blue',
 	"1": 'green',
 }
-
+const dropdownOptions = [
+	{ name: "Show all", value: "0" },
+	{ name: "Column mode", value: "1" },
+	{ name: "Show Tags", value: "2" },
+	{ name: "Show description", value: "3" },
+]
 
 const EditVariables: NextPage = () => {
 	const [sorghumVariables, setSorghumVariables] = useState<ApsimVariable[]>([]);
 	const [search, setSearch] = useState<FilterRes>({});
 	const [suggestions, setSuggestions] = useState<string[]>([]);
+	const [selectedMode, setSelectedMode] = useState(0);
 
 	const importButton = useRef<HTMLInputElement>(null);
 	const allSuggestions = useRef<string[][]>([]);
@@ -75,10 +81,10 @@ const EditVariables: NextPage = () => {
 	}
 
 	const filterMethod = (line: ApsimVariable) => {
-		let condition: boolean | undefined = undefined;
+		let condition: boolean | undefined = true;
 		for (var key in search) {
 			for (let value of search[key] ?? []) {
-				condition = condition || getFilterFuction(+key, value, line);
+				condition = condition && getFilterFuction(+key, value, line);
 			}
 		}
 
@@ -97,12 +103,26 @@ const EditVariables: NextPage = () => {
 				<h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
 					View Apsim Classic Variables
 				</h1>
-				<input id="import-file" ref={importButton} type="file" className="hidden" onChange={handleFileUpload} />
-				<button type='button'
-					onClick={() => importButton.current?.click()}
-					className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-					Import JSON
-				</button>
+				<div className="flex w-full">
+					<div className="flex flex-1"></div>
+					<div className="grow"></div>
+					<div className="flex flex-1 justify-center">
+						<input id="import-file" ref={importButton} type="file" className="hidden" onChange={handleFileUpload} />
+						<button type='button'
+							onClick={() => importButton.current?.click()}
+							className="bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+							Import JSON
+						</button>
+					</div>
+					<div className="grow"></div>
+					{sorghumVariables.length > 0 ?
+						<div className="flex flex-1 justify-end">
+							<Dropdown options={dropdownOptions} selectedIndex={selectedMode} onSelect={(idx: number) => setSelectedMode(idx)} size='lg' />
+						</div>
+						:
+						<div className="flex flex-1" />
+					}
+				</div>
 
 				{sorghumVariables.length > 0 && <div className="container mt-4 w-full">
 					<FilterSearch
@@ -125,8 +145,12 @@ const EditVariables: NextPage = () => {
 										<div className="flex">
 											<div className="flex flex-col w-1/4">
 												<div className="p-1 font-semibold">{line.name}</div>
-												<div className="pl-1 italic text-xs l-4 text-gray-400"> {line.units ? line.units : null}</div>
-												<div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
+												{[0, 3].includes(selectedMode) && (
+													<>
+														<div className="pl-1 italic text-xs l-4 text-gray-400"> {line.units ? line.units : null}</div>
+														<div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
+													</>
+												)}
 											</div>
 											<div className="flex flex-col w-3/4">
 												<FloatingInput
@@ -135,13 +159,13 @@ const EditVariables: NextPage = () => {
 													onChange={(value: string) => line.nextgen = value}
 													disabled={true}
 												/>
-												<div className="w-full translate-y-[25%] flex flex-auto gap-1">
+												{[0, 2].includes(selectedMode) && <div className="w-full translate-y-[25%] flex flex-auto gap-1">
 													{line?.tags?.map((v, idx) => (
 														<div className="pointer-events-auto" key={`tag-${idx}-${v}`}>
 															<Badge color='green'>#{v}</Badge>
 														</div>
 													))}
-												</div>
+												</div>}
 											</div>
 										</div>
 									}

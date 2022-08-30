@@ -72,10 +72,10 @@ const EditVariables: NextPage = () => {
   }
 
   const filterMethod = (line: ApsimVariable) => {
-    let condition: boolean | undefined = undefined;
+    let condition: boolean | undefined = true;
     for (var key in search) {
       for (let value of search[key] ?? []) {
-        condition = condition || getFilterFuction(+key, value, line);
+        condition = condition && getFilterFuction(+key, value, line);
       }
     }
     return condition

@@ -12,13 +12,16 @@ export type DropdownOption = {
 	extra?: string | number | object;
 }
 
+type Size = 'sm' | 'md' | 'lg';
+
 type DropdownProps = {
 	options: DropdownOption[],
 	selectedIndex?: number;
 	placeholder?: DropdownOption;
 	id?: string;
 	onSelect?: (idx: number) => void;
-	embedded?: 'right' | 'left'
+	embedded?: 'right' | 'left';
+	size?: Size;
 };
 
 export const Dropdown = ({
@@ -27,16 +30,20 @@ export const Dropdown = ({
 	options,
 	placeholder,
 	onSelect = (idx: number) => null,
-	embedded
+	embedded,
+	size = 'md',
 }: DropdownProps) => {
 	const [expanded, setExpanded] = useState(false);
 
 	const dropdownRef: LegacyRef<HTMLDivElement> = useRef(null);
 	useOnClickOutside(dropdownRef, () => setExpanded(false));
 
+	const borderClass = !embedded ? 'border rounded-md' : embedded === 'right' ? 'border-l-2 rounded-r-md' : 'border-r-2 rounded-l-md';
+	const widthClass = size === 'sm' ? 'w-[120px]' : size === 'md' ? 'w-[150px]' : 'w-[180px]';
+
 	return (
 		<div id={id}
-			className={`relative w-[150px] inline-flex items-stretch bg-white h-full border-gray-300  ${!embedded ? 'border rounded-md' : embedded === 'right' ? 'border-l-2 rounded-r-md' : 'border-r-2 rounded-l-md'}`}
+			className={`relative inline-flex items-stretch bg-white h-full border-gray-300 ${borderClass} ${widthClass}`}
 			ref={dropdownRef}
 		>
 			<div
@@ -51,7 +58,7 @@ export const Dropdown = ({
 					<FaCaretDown className="w-4 h-4" />
 				</div>
 				{expanded && <div
-					className="absolute bottom-0 translate-y-[103%] z-10 w-56 origin-top-right bg-white border border-gray-100 rounded-b-md shadow-lg"
+					className="absolute bottom-0 translate-y-[103%] z-20 w-56 origin-top-right bg-white border border-gray-100 rounded-b-md shadow-lg"
 					role="menu"
 				>
 					{options.map((option, idx) => {
