@@ -123,7 +123,7 @@ const EditVariables: NextPage = () => {
                       </div>
                       <div className="flex flex-col w-3/4 gap-2">
                         <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => line.nextgen = value} />
-                        <TagInput label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} />
+                        <TagInput label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
                       </div>
                     </div>
                   }

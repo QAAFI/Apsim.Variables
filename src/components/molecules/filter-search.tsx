@@ -4,6 +4,9 @@ import { FaSearch } from 'react-icons/fa';
 
 import { useOnClickOutside } from "../../hooks/click-outside";
 
+
+type BadgePosition = 'start' | 'end';
+
 export interface FilterRes {  // easy to use
 	[key: string]: string[]
 }
@@ -17,6 +20,7 @@ type FilterProps = {
 	colorMap?: { [key: string]: BadgeColor };
 	suggestions?: string[];
 	getSelectedFilterIdx?: (idx: number) => void;
+	badgePosition?: BadgePosition;
 };
 
 export const FilterSearch = ({
@@ -27,6 +31,7 @@ export const FilterSearch = ({
 	colorMap,
 	onChange = (values: FilterRes) => null,
 	suggestions = [],
+	badgePosition = 'start',
 	getSelectedFilterIdx = (idx: number) => null,
 }: FilterProps) => {
 
@@ -85,6 +90,16 @@ export const FilterSearch = ({
 		setBadges([...currentBadges])
 	}
 
+	const handleOnBackSpace = () => {
+		if (badges && badges.length > 0 && search === '') {
+			const badgeValue: string = options[badges?.[badges.length - 1]?.[0] ?? 0]?.extra ? (
+				badges[badges.length - 1]?.[1]?.slice(1, badges[badges.length - 1]?.[1]?.length) ?? '') : (
+				badges[badges.length - 1]?.[1] ?? '');
+			setSearch(badgeValue)
+			handleOnBadgeClose(badges.length - 1);
+		}
+	}
+
 	const onSelectSuggestion = (value: string) => {
 		setSearch(value ?? '')
 		const input = document.getElementById(id);
@@ -112,33 +127,48 @@ export const FilterSearch = ({
 					onSelect={(idx: number) => { setFilterIdx(idx); getSelectedFilterIdx(idx) }}
 					selectedIndex={filterIdx}
 					embedded='left'
+					size="lg"
 				/>
 			</div>
 			<div ref={dropdownRef} className="relative w-full">
-				<input
-					type="text"
-					id={id}
-					className="w-full py-1 px-2"
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					placeholder={placeholder}
-					onKeyDown={(e) => { if (e.key === 'Enter') { onClickSearch() } }}
-					autoComplete="off"
-					onFocus={() => setExpanded(true)}
-				/>
+				<div className="flex relative w-full bg-transparent">
+					{badges.length > 0 && badgePosition === 'start' && <div className="pl-2 pt-1 flex gap-1 pointer-events-none">
+						{badges.map((v, idx) => {
+							const key = v[0] ?? '';
+							const value = v[1];
+							return (
+								<div className="pointer-events-auto" key={`b-${key}-${value}`}>
+									<Badge color={colorMap ? colorMap[key] : "green"} onClose={() => handleOnBadgeClose(idx)}>{value}</Badge>
+								</div>
+							)
+						}
+						)}
+					</div>}
+					<input
+						type="text"
+						id={id}
+						className="w-full py-1 px-2 focus:outline-none focus:ring-0 appearance-none"
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						placeholder={placeholder}
+						onKeyDown={(e) => { if (e.key === 'Enter') { onClickSearch() }; if (e.key === 'Backspace') { handleOnBackSpace() }; }}
+						autoComplete="off"
+						onFocus={() => setExpanded(true)}
+					/>
+				</div>
 
-				<div className="absolute w-full right-2 top-0 translate-y-[10%] flex flex-auto justify-end gap-1 pointer-events-none" onBlur={() => setExpanded(false)}>
+				{badgePosition === 'end' && <div className="absolute w-full right-2 top-0 translate-y-[10%] flex flex-auto justify-end gap-1 pointer-events-none" onBlur={() => setExpanded(false)}>
 					{badges.map((v, idx) => {
 						const key = v[0] ?? '';
 						const value = v[1];
 						return (
 							<div className="pointer-events-auto" key={`b-${key}-${value}`}>
-								<Badge closable color={colorMap ? colorMap[key] : "green"} onClose={() => handleOnBadgeClose(idx)}>{value}</Badge>
+								<Badge color={colorMap ? colorMap[key] : "green"} onClose={() => handleOnBadgeClose(idx)}>{value}</Badge>
 							</div>
 						)
 					}
 					)}
-				</div>
+				</div>}
 
 				{expanded && <div
 					className="absolute max-h-[250px] overflow-y-scroll bottom-0 translate-y-[101%] z-20 w-full origin-top-right bg-white border border-gray-100 rounded-b-md shadow-lg"

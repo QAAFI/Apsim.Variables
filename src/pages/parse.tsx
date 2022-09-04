@@ -26,7 +26,7 @@ const Parse: NextPage = () => {
         let desc = reDesc.exec(line);
         let units = reUnits.exec(line);
         let name = reName.exec(line);
-        //console.log('av: ', units ? units[0] : 'null');
+
         return {
           name: name ? name[0] : null,
           description: desc ? desc[0] : null,

@@ -4,23 +4,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Badge, BadgeColor, Dropdown } from "../components/atoms";
 import { FloatingInput } from "../components/atoms/input";
 import { FilterRes, FilterSearch } from "../components/molecules";
-import { TagInput } from "../components/molecules/tag-input";
+import sorghumData from '../../public/sorghum.json';
 import { ApsimVariable } from "../models";
 
 
 const filterOptions = [
 	{ name: "Variable name", value: "0" },
 	{ name: "Tag name", value: "1", extra: "#" },
+	{ name: "NextGen Reference", value: "2" },
 ]
 const colorMapper: { [key: string]: BadgeColor } = {
 	"0": 'blue',
 	"1": 'green',
+	"2": 'orange',
 }
 const dropdownOptions = [
-	{ name: "Show all", value: "0" },
+	{ name: "Detail mode", value: "0" },
 	{ name: "Column mode", value: "1" },
-	{ name: "Show Tags", value: "2" },
-	{ name: "Show description", value: "3" },
 ]
 
 const EditVariables: NextPage = () => {
@@ -32,20 +32,32 @@ const EditVariables: NextPage = () => {
 	const importButton = useRef<HTMLInputElement>(null);
 	const allSuggestions = useRef<string[][]>([]);
 
+	useEffect(() => {
+		setSorghumVariables(sorghumData);
+		genSuggestions(sorghumData);
+	}, [sorghumData])
+
 	const readFileSuccess = (res) => {
 		const data = JSON.parse(res);
 		setSorghumVariables(data);
 
+		genSuggestions(data);
+	}
+
+	const genSuggestions = (data) => {
 		// save suggestions for futher uses
 		const nameSuggestion: string[] = []
 		const tagSuggestions: string[][] = []
+		const nextgenSuggestions: string[] = []
 		for (let d of data) {
 			nameSuggestion.push(d.name)
 			tagSuggestions.push(d.tags);
+			d.nextgen ? nextgenSuggestions.push(d.nextgen) : null;
 		}
 		allSuggestions.current = [
 			nameSuggestion,
 			tagSuggestions.reduce((prev: string[], curr: string[]) => { if (curr) { return prev.concat(curr); } else return prev; }),
+			nextgenSuggestions,
 		];
 		setSuggestions(allSuggestions.current[0] ?? []);
 	}
@@ -66,7 +78,11 @@ const EditVariables: NextPage = () => {
 	}
 
 	const searchByTagName = (searchValue: string, line: ApsimVariable) => {
-		return line?.tags?.map(tag => tag.toLowerCase()).includes(searchValue.toLowerCase()) ?? false;
+		return line?.tags?.map(tag => tag.toLowerCase().includes(searchValue.toLowerCase())).reduce((prev, curr) => prev || curr) ?? false;
+	}
+
+	const searchByNextGenName = (searchValue: string, line: ApsimVariable) => {
+		return line?.nextgen?.toLowerCase().includes(searchValue.toLowerCase()) ?? false;
 	}
 
 	const getFilterFuction = (methodIdx: number, search: string, line: ApsimVariable) => {
@@ -76,7 +92,7 @@ const EditVariables: NextPage = () => {
 			case 1:
 				return searchByTagName(search, line);
 			case 2:
-				break;
+				return searchByNextGenName(search, line);
 		}
 	}
 
@@ -135,37 +151,45 @@ const EditVariables: NextPage = () => {
 					/>
 				</div>}
 
-				< ul className="w-full pt-2 container mx-auto flex flex-col " >
+				< ul className={`pt-2 container mx-auto flex flex-col w-full ${selectedMode === 0 ? "flex-row" : "grid grid-cols-3"}`} >
 					{sorghumVariables?.map((line, index) => {
 						if (filterMethod(line) === false) return;
 						return (
 							line.name ? (
-								<li key={index} className="p-2 relative border flex-row" >
-									{line.name &&
+								<li key={index} className={`p-2 relative border flex-row`} >
+									{line.name && selectedMode === 0 ?
 										<div className="flex">
 											<div className="flex flex-col w-1/4">
 												<div className="p-1 font-semibold">{line.name}</div>
-												{[0, 3].includes(selectedMode) && (
-													<>
-														<div className="pl-1 italic text-xs l-4 text-gray-400"> {line.units ? line.units : null}</div>
-														<div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
-													</>
-												)}
+												<div className="pl-1 italic text-xs l-4 text-gray-400"> {line.units ? line.units : null}</div>
+												<div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
 											</div>
-											<div className="flex flex-col w-3/4">
+											<div className="w-3/4">
 												<FloatingInput
 													lable="Apsim NextGen Reference"
 													value={line.nextgen ?? "-"}
 													onChange={(value: string) => line.nextgen = value}
 													disabled={true}
 												/>
-												{[0, 2].includes(selectedMode) && <div className="w-full translate-y-[25%] flex flex-auto gap-1">
+												<div className="w-full translate-y-[25%] flex flex-auto gap-1">
 													{line?.tags?.map((v, idx) => (
 														<div className="pointer-events-auto" key={`tag-${idx}-${v}`}>
 															<Badge color='green'>#{v}</Badge>
 														</div>
 													))}
-												</div>}
+												</div>
+											</div>
+										</div>
+										:
+										<div className="flex">
+											<div className="w-2/5 file:p-1 font-semibold text-sm translate-y-2">{line.name}</div>
+											<div className="flex flex-col w-3/5">
+												<FloatingInput
+													lable="Apsim NextGen Reference"
+													value={line.nextgen ?? "-"}
+													onChange={(value: string) => line.nextgen = value}
+													disabled={true}
+												/>
 											</div>
 										</div>
 									}
