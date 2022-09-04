@@ -20,6 +20,7 @@ const EditVariables: NextPage = () => {
   const [search, setSearch] = useState<FilterRes>({});
 
   const suggestions = useRef<string[]>([]);
+  const importButton = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setSorghumVariables(sorghumData);
@@ -71,6 +72,18 @@ const EditVariables: NextPage = () => {
     setSearch(values)
   }
 
+  const readFileSuccess = (res) => {
+    const data = JSON.parse(res);
+    setSorghumVariables(data);
+  }
+
+  const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const newFile = e.target?.files?.[0];
+    var fileReader = new FileReader();
+    fileReader.onload = function (evt) { readFileSuccess(evt.target?.result) };
+    fileReader.readAsText(newFile as File);
+  }
+
   const filterMethod = (line: ApsimVariable) => {
     let condition: boolean | undefined = true;
     for (var key in search) {
@@ -93,10 +106,18 @@ const EditVariables: NextPage = () => {
         <h1 className="md:text-[2rem] leading-normal font-bold text-gray-700">
           Edit Apsim Classic Variables
         </h1>
-        <button type='button' onClick={exportToJson}
-          className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          Export to JSON
-        </button>
+        <div className="flex">
+          <input id="import-file" ref={importButton} type="file" className="hidden" onChange={handleFileUpload} />
+          <button type='button'
+            onClick={() => importButton.current?.click()}
+            className="bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Import JSON
+          </button>
+          <button type='button' onClick={exportToJson}
+            className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Export to JSON
+          </button>
+        </div>
         <div className="mt-4 w-full">
 
           <FilterSearch
@@ -123,7 +144,7 @@ const EditVariables: NextPage = () => {
                       </div>
                       <div className="flex flex-col w-3/4 gap-2">
                         <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => line.nextgen = value} />
-                        <TagInput label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
+                        <TagInput values={line.tags} label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
                       </div>
                     </div>
                   }

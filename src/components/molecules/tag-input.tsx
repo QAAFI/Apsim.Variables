@@ -9,7 +9,7 @@ type TagInputProps = {
 	label?: string;
 	onChange: (value: string[]) => void;
 	badgeColor?: BadgeColor;
-	delay?: number;
+	values?: string[];
 	disabled?: boolean;
 };
 
@@ -17,8 +17,8 @@ export const TagInput = ({
 	id = 'tag-input',
 	label,
 	badgeColor,
-	delay = 2000,
 	disabled = false,
+	values = [],
 	onChange = (value: string[]) => null
 }: TagInputProps) => {
 
@@ -38,6 +38,10 @@ export const TagInput = ({
 
 		setSearch("");
 	}
+
+	useEffect(() => {
+		setFilterValues(values)
+	}, [values]);
 
 	const handleOnBadgeClose = (idx: number) => {
 		const currentValue = filterValues;
