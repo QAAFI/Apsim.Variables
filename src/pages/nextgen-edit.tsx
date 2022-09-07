@@ -74,14 +74,17 @@ const EditVariables: NextPage = () => {
 
   const readFileSuccess = (res) => {
     const data = JSON.parse(res);
-    setSorghumVariables(data);
+    setSorghumVariables([...data]);
   }
 
   const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const newFile = e.target?.files?.[0];
-    var fileReader = new FileReader();
-    fileReader.onload = function (evt) { readFileSuccess(evt.target?.result) };
-    fileReader.readAsText(newFile as File);
+    console.log(newFile)
+    if (newFile) {
+      var fileReader = new FileReader();
+      fileReader.onload = function (evt) { readFileSuccess(evt.target?.result) };
+      fileReader.readAsText(newFile as File);
+    }
   }
 
   const filterMethod = (line: ApsimVariable) => {
@@ -143,8 +146,8 @@ const EditVariables: NextPage = () => {
                         <div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
                       </div>
                       <div className="flex flex-col w-3/4 gap-2">
-                        <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => line.nextgen = value} />
-                        <TagInput values={line.tags} label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
+                        <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => { line.nextgen = value; setSorghumVariables([...sorghumVariables]) }} />
+                        <TagInput initValues={line.tags} label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
                       </div>
                     </div>
                   }

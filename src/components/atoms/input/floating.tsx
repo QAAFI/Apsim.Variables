@@ -13,8 +13,8 @@ interface FloatingInputProps {
 
 
 export const FloatingInput = ({
-	id,
-	lable,
+	id = "float-input",
+	lable = "",
 	value,
 	onChange = (value: string) => null,
 	disabled = false,
