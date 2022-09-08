@@ -25,7 +25,7 @@ const EditVariables: NextPage = () => {
   useEffect(() => {
     setSorghumVariables(sorghumData);
     suggestions.current = sorghumData.map(d => d.name);
-  }, [sorghumData])
+  }, [])
 
   const downloadFile = ({ data, fileName, fileType }) => {
     // Create a blob with the data we want to download as a file
@@ -146,7 +146,7 @@ const EditVariables: NextPage = () => {
                         <div className="basis-1/4 p-1 text-sm text-gray-600">{line.description ? line.description : null}</div>
                       </div>
                       <div className="flex flex-col w-3/4 gap-2">
-                        <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen} onChange={(value: string) => { line.nextgen = value; setSorghumVariables([...sorghumVariables]) }} />
+                        <FloatingInput lable="Apsim NextGen Reference" value={line.nextgen ?? ''} onChange={(value: string) => { line.nextgen = value; setSorghumVariables([...sorghumVariables]) }} />
                         <TagInput initValues={line.tags} label="Apsim NextGen Tags" onChange={(value: string[]) => line.tags = value} id={'tag-input-' + index} />
                       </div>
                     </div>

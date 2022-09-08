@@ -35,7 +35,7 @@ const EditVariables: NextPage = () => {
 	useEffect(() => {
 		setSorghumVariables(sorghumData);
 		genSuggestions(sorghumData);
-	}, [sorghumData])
+	}, [])
 
 	const readFileSuccess = (res) => {
 		const data = JSON.parse(res);

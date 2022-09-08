@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useDebounce } from "../../hooks/use-debounce";
+import { useState } from "react";
 import { Badge, BadgeColor } from "../atoms";
-import { FloatingInput } from "../atoms/input";
 
 
 type TagInputProps = {
@@ -32,12 +30,13 @@ export const TagInput = ({
 	const handleOnPressEnter = () => {
 		if (!search) return;
 		const currentValues = filterValues;
-
-		const dupValue = currentValues.length > 0 && (currentValues.includes(search));
-		if (!dupValue) {
-			currentValues.push(search);
-			setFilterValues([...currentValues]);
-			onChange(currentValues);
+		for (let value of search.split(" ")) {
+			const dupValue = currentValues.length > 0 && (currentValues.includes(value));
+			if (!dupValue) {
+				currentValues.push(value);
+				setFilterValues([...currentValues]);
+				onChange(currentValues);
+			}
 		}
 
 		setSearch("");
