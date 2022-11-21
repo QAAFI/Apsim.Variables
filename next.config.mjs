@@ -18,6 +18,5 @@ export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
   distDir: "build",
-  basePath: !debug ? process.env.NEXT_PUBLIC_BASE_PATH : '',
   assetPrefix: !debug ? process.env.NEXT_PUBLIC_BASE_PATH : ''
 });
