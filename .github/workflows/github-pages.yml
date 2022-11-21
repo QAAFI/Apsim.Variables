@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      NEXT_PUBLIC_BASE_PATH: https://qaafi.github.io/Apsim.Variables/
+
     strategy:
       matrix:
         node-version: [18.x]
@@ -25,8 +28,11 @@ jobs:
       - name: Install packages
         run: npm ci
 
-      - name: Build project and export static file
+      - name: Build project
         run: npm run build
+
+      - name: create static file
+        run: npm run export
 
       - name: Add .nojekyll file
         run: mkdir -p ./out/ && touch ./out/.nojekyll
