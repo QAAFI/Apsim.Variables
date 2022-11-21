@@ -31,7 +31,7 @@ To deploy ApsimX Variable to Github pages, there are some required configuration
    to transform the env in `babel-config.js` file to remote env without creating the `.env` file
 
 5. github-pages.yml
-   github action which use to create static files to github-action branch. Then Github will
+   github action which use to create static files to `gh-pages` branch. Then Github will deploy application to Github pages from `gh-pages`
 
 ### NOTE
 - Step 3 and 4 can be ignore `BACKEND_URL` if we set up the configuration on Github repository, however in NextJS, the env have to have `NEXT_` as variable config. 
