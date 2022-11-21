@@ -25,6 +25,7 @@ const EditVariables: NextPage = () => {
   useEffect(() => {
     setSorghumVariables(sorghumData);
     suggestions.current = sorghumData.map(d => d.name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorghumData])
 
   const downloadFile = ({ data, fileName, fileType }) => {

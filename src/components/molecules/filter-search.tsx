@@ -7,7 +7,7 @@ import { useOnClickOutside } from "../../hooks/click-outside";
 
 type BadgePosition = 'start' | 'end';
 
-export interface FilterRes {  // easy to use
+export interface FilterRes {
 	[key: string]: string[]
 }
 
@@ -57,6 +57,7 @@ export const FilterSearch = ({
 		})
 		setExistedValues(response);
 		onChange(response);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchValues])
 
 	const onClickSearch = () => {

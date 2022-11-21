@@ -35,6 +35,7 @@ const EditVariables: NextPage = () => {
 	useEffect(() => {
 		setSorghumVariables(sorghumData);
 		genSuggestions(sorghumData);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sorghumData])
 
 	const readFileSuccess = (res) => {
