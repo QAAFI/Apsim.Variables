@@ -1,0 +1,10 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/": "pages/index.html",
+  "/nextgen-edit": "pages/nextgen-edit.html",
+  "/parse": "pages/parse.html",
+  "/view-variable": "pages/view-variable.html",
+  "/_document": "pages/_document.js",
+  "/404": "pages/404.html"
+}
