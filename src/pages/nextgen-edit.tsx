@@ -2,10 +2,9 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from 'react';
 import sorghumData from '../../public/sorghum.json';
-import { BadgeColor } from "../components/atoms";
-import { FloatingInput } from "../components/atoms/input";
-import { FilterRes, FilterSearch } from "../components/molecules/filter-search";
-import { TagInput } from "../components/molecules/tag-input";
+import { BadgeColor, FloatingInput } from "../components/";
+import { FilterRes, FilterSearch } from "../components/filter-search";
+import { TagInput } from "../components/tag-input";
 import { ApsimVariable } from "../models";
 
 const filterOptions = [

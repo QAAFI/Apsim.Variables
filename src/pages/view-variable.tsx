@@ -1,9 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from 'react';
-import { Badge, BadgeColor, Dropdown } from "../components/atoms";
-import { FloatingInput } from "../components/atoms/input";
-import { FilterRes, FilterSearch } from "../components/molecules";
+import { Badge, BadgeColor, Dropdown, FilterRes, FilterSearch, FloatingInput } from "../components";
 import sorghumData from '../../public/sorghum.json';
 import { ApsimVariable } from "../models";
 
