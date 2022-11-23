@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useDebounce } from "../../hooks/use-debounce";
-import { Badge, BadgeColor } from "../atoms";
-import { FloatingInput } from "../atoms/input";
+import { useState } from "react";
+import { Badge, BadgeColor } from "./";
 
 
 type TagInputProps = {

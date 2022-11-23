@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXT_PUBLIC_BASE_PATH: https://qaafi.github.io/Apsim.Variables/
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Get files
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: create static file
+        run: npm run export
+
+      - name: Add .nojekyll file
+        run: mkdir -p ./out/ && touch ./out/.nojekyll
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: gh-pages
+          folder: out

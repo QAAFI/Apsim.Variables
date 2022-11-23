@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Badge, BadgeColor, Button, Dropdown, DropdownOption } from "../atoms";
+import { Badge, BadgeColor, Button, Dropdown, DropdownOption } from "./";
 import { FaSearch } from 'react-icons/fa';
 
-import { useOnClickOutside } from "../../hooks/click-outside";
+import { useOnClickOutside } from "../hooks/click-outside";
 
 
 type BadgePosition = 'start' | 'end';
 
-export interface FilterRes {  // easy to use
+export interface FilterRes {
 	[key: string]: string[]
 }
 
@@ -57,6 +57,7 @@ export const FilterSearch = ({
 		})
 		setExistedValues(response);
 		onChange(response);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchValues])
 
 	const onClickSearch = () => {

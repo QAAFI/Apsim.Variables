@@ -1,5 +1,5 @@
 import React, { LegacyRef, useRef, useState } from "react";
-import { useOnClickOutside } from "../../hooks/click-outside";
+import { useOnClickOutside } from "../hooks/click-outside";
 
 import { FaCaretDown } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';

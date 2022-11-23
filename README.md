@@ -10,25 +10,15 @@ npm run dev
 
 ## How to deploy Github Pages
 ```
-npm run deploy
+Push code to master branch
 ```
 
 ## Important Settings
 
-Before deploying the ApsimX Variable, here are the configurations which are required in order to deploy the application to Github Pages 
-
+To deploy ApsimX Variable to Github pages, there are some required configurations 
 
 1. package.json
    - `homepage` - to set up the url on remote Github Pages
-   - Deploying script - it is a work around, subtree can't be used because we ignored the related files. 
-      - `npm run deploy` - to deploy the static files to Github Pages
-         - `npm run build` - to build and create production static files to `out` folder
-         - `mkdir backup && cp -r ./out/* ./backup` - to make backup folder which will be counted as changed in gh-pages branch
-         - `touch ./out/.nojekyll` - create `.nojekyll` file, to tell Github to ignore the directory start with `_`, for example `_next` 
-         - `git checkout gh-pages -f && git pull` - change to `gh-pages` branch and pull
-         - `rm -rf ./_next/` - clear the old data 
-         - `mv ./backup/* ./ && rm -rf ./backup/` - move all changes in backup file to the `gh-pages` branch and clean up
-         - `git add . && git commit -m \"Deploy gh-pages\" && git push origin gh-pages` - normal push to the gh-pages branch
 
 2. next.config.mjs
    - distDir - to tell NextJS where it should create the production file to.
@@ -40,14 +30,17 @@ Before deploying the ApsimX Variable, here are the configurations which are requ
 4. babelrc.js
    to transform the env in `babel-config.js` file to remote env without creating the `.env` file
 
+5. github-pages.yml
+   github action which use to create static files to `gh-pages` branch. Then Github will deploy application to Github pages from `gh-pages`
+
 ### NOTE
-- You should only run `npm run deploy` on `master` branch, otherwise it will fail on updating the `gh-pages` branch
 - Step 3 and 4 can be ignore `BACKEND_URL` if we set up the configuration on Github repository, however in NextJS, the env have to have `NEXT_` as variable config. 
    
 ### Informations
 - [Github settings for Github Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 - [Basic Github Pages set up for React Application](https://github.com/gitname/react-gh-pages)
 - [Github pages settings for NextJS Application](https://medium.com/@anotherplanet/git-tips-next-js-github-pages-2dbc9a819cb8)
+- [Github action setting](https://www.linkedin.com/pulse/deploy-nextjs-app-github-pages-federico-antu%C3%B1a/)
 
 ---
 ## Project structure

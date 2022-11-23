@@ -18,5 +18,5 @@ export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
   distDir: "build",
-  assetPrefix: !debug ? 'https://qaafi.github.io/Apsim.Variables/' : '',
+  assetPrefix: !debug ? process.env.NEXT_PUBLIC_BASE_PATH : ''
 });
